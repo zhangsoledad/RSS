@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RssReader</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="css/jquerymobile.css" />
+</head>
+<body>
+
+	//主页模板
+	<script type="text/template" id="home">
+	<div class="ui-header ui-bar-a"  data-form="ui-bar-a" data-role="header" data-position="fixed">	
+		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-bars ui-btn-icon-notext ui-shadow" data-form="ui-icon" data-role="button" role="button">推荐</a>
+		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">主页</h1>
+		<a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-gear ui-btn-icon-notext ui-shadow"  data-form="ui-icon" data-role="button" role="button"> 设置 </a>
+	</div>
+	<div data-role="content">
+		<ul data-role="listview" id="channel_list">
+
+		</ul>
+	</div>
+	</script>
+
+
+	//推荐模板
+	<script type="text/template" id="recommend">
+	<div class="ui-header ui-bar-a"  data-form="ui-bar-a" data-role="header" data-position="fixed">	
+		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">推荐</h1>
+		<a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-back ui-btn-icon-notext ui-shadow"  data-form="ui-icon" data-role="button" role="button"> 返回 </a>
+	</div>
+
+     <div data-role="content">
+
+     </div>
+	</script>
+
+	//设置模板
+	<script type="text/template" id="setting">
+	<div class="ui-header ui-bar-a"  data-form="ui-bar-a" data-role="header" data-position="fixed">	
+	<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-back ui-btn-icon-notext ui-shadow"  data-form="ui-icon" data-role="button" role="button"> 返回 </a>
+		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">设置</h1>
+		
+	</div>
+
+     <div data-role="content">
+
+     </div>
+	</script>
+
+	//订阅模板
+	<script type="text/template" id="feed">
+	<div class="ui-header ui-bar-a"  data-form="ui-bar-a" data-role="header" data-position="fixed">	
+		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-home ui-btn-icon-notext ui-shadow" data-form="ui-icon" data-role="button" role="button">主页</a>
+		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1"><%></h1>
+	</div>
+	<div data-role="content">
+		<ul data-role="listview" id="feed_list">
+
+		</ul>
+	</div>
+	</script>
+
+	//信息模板
+	<script type="text/template" id="info">
+	<div class="ui-header ui-bar-a"  data-form="ui-bar-a" data-role="header" data-position="fixed">	
+		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-home ui-btn-icon-notext ui-shadow" data-form="ui-icon" data-role="button" role="button">主页</a>
+		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1"><%></h1>
+		<a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-star ui-btn-icon-notext ui-shadow"  data-form="ui-icon" data-role="button" role="button"> 收藏</a>
+	</div>
+	<div data-role="content">
+		
+	</div>
+	</script>
+
+	<script src="js/lib/jquery.js"></script>
+    <script src="js/lib/jqmconfig.js"></script>
+    <script src="js/lib/jquerymobile.js"></script>
+    <script src="js/lib/underscore.js"></script>
+    <script src="js/lib/backbone.js"></script>
+    <script src="js/app.js"></script>
+
+
+
+</body>
+</html>
