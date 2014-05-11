@@ -41,6 +41,7 @@ var followChannelCollection= Backbone.Collection.extend({
 var followchannelcollection = new followChannelCollection;
 var unfollowchannelcollection = new unfollowChannelCollection;
 var feedcollection = new feedCollection;
+var feed_id;
 
 function get_feed(url ,router) {
 	var MaxCount = 10;
@@ -58,11 +59,9 @@ function get_feed(url ,router) {
 					publishedDate: item.publishedDate,
 					title: item.title
 				}));
-				console.log(JSON.stringify(feedcollection));
-
-
+				//console.log(JSON.stringify(feedcollection));
 			});
-			router.changePage(new FeedView({collection:feedcollection}));
+			router.changePage(new FeedListView({collection:feedcollection}));
 		}
 	});
 }
@@ -76,11 +75,20 @@ window.HomeView = Backbone.View.extend({
         return this;
     }
 });
-window.FeedView = Backbone.View.extend({
+window.FeedListView = Backbone.View.extend({
 	template:_.template($('#feed').html()),
 
 	render:function (eventName) {
        $(this.el).html(this.template({feed:this.collection.toJSON()}));
+        return this;
+    }
+});
+window.FeedView = Backbone.View.extend({
+	template:_.template($('#content').html()),
+
+	render:function (eventName) {
+		console.log(this.model.toJSON());
+       $(this.el).html(this.template({feed: this.model.toJSON()}));
         return this;
     }
 });
@@ -90,7 +98,8 @@ window.FeedView = Backbone.View.extend({
 var AppRouter = Backbone.Router.extend({
 	routes:{
         "":"home",
-        "channel/:name/*url":"feed"
+        "channel/:name/*url":"feed",
+        "content/:id" :"content"
     },
     initialize:function () {
         // Handle back button throughout the application
@@ -113,8 +122,13 @@ var AppRouter = Backbone.Router.extend({
    		//this.changePage(new FeedView({collection:feedcollection}));
     },
 
+    content:function(id ){
+    	console.log('#content'+id);
+    	feed_id =id;
+    	var feed_view =  feedcollection.get(feed_id);
+    	this.changePage(new FeedView({model:feed_view}));
 
-
+    },
     triggerChangeView: function (view) {
 	    this.changePage(view);
 	},
@@ -152,7 +166,6 @@ function app_initial(){
 	unfollowchannelcollection.create(new Channel({id: "12",name: "女人焦点",url:"http://news.baidu.com/n?cmd=1&class=healthnews&tn=rss"}));
 	unfollowchannelcollection.create(new Channel({id: "13",name: "科技焦点",url:"http://news.baidu.com/n?cmd=1&class=technnews&tn=rss"}));
 	unfollowchannelcollection.create(new Channel({id: "14",name: "社会焦点",url:"http://news.baidu.com/n?cmd=1&class=socianews&tn=rss"}));	
-
 }
 
 

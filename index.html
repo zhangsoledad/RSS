@@ -63,11 +63,13 @@
 		<% for (var i = 0; i <feed.length; i++) { %>
 
 			<% var item = feed[i]; %>
-			<li><a href ="">
+			<li><a href ="#content/<%= item.id %>">
 					<h2><%= item.title %></h2>
 					<p><strong><%= item.author %></strong></p>
 					<p><%= item.contentSnippet %></p>
-					<p class="ui-li-aside"><strong><%= item.publishedDate %></strong></p>	
+					<p class="ui-li-aside"><strong>
+					<%= moment(new Date(item.publishedDate)).fromNow()%>
+					</strong></p>	
 				</a> 
 			</li>
 		<% } %>
@@ -78,14 +80,15 @@
 
 
 
-	<script type="text/template" id="info">
+	<script type="text/template" id="content">
 	<div class="ui-header ui-bar-a"  data-form="ui-bar-a" data-role="header" data-position="fixed">	
-		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-home ui-btn-icon-notext ui-shadow" data-form="ui-icon" data-role="button" role="button" >主页</a>
-		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1"><%></h1>
+		<a class="back ui-btn-left ui-btn-corner-all ui-btn ui-icon-back ui-btn-icon-notext ui-shadow" data-form="ui-icon" data-role="button" role="button" href="#">返回</a>
+		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1"></h1>
 		<a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-star ui-btn-icon-notext ui-shadow"  data-form="ui-icon" data-role="button" role="button"> 收藏</a>
 	</div>
 	<div data-role="content">
-		
+		<h2><%=feed.title%></h2>
+		<%=feed.content%>
 	</div>
 	</script>
 
@@ -95,6 +98,8 @@
     <script type="text/javascript"src="js/lib/underscore.js"></script> 
     <script type="text/javascript"src="js/lib/backbone.js"></script>
     <script type="text/javascript"src="js/lib/backbone.localStorage.js"></script>
+    <script type="text/javascript"src="js/lib/moment.js"></script>
+    <script type="text/javascript"src="js/lib/zh-cn.js"></script>
     <script type="text/javascript"src="js/app.js"></script>
 
     <script type="text/javascript">
