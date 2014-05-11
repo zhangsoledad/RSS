@@ -20,11 +20,11 @@ var feed = Backbone.Model.extend({
         contentSnippet:'',
         link:'',
         publishedDate:'',
-        title:''
+        title:'无题'
     }
 });
-var feedCollection =Backbone.Collection.extend({
-	model : feed
+var feedCollection = Backbone.Collection.extend({
+	model: feed
 });
 
 
@@ -40,32 +40,34 @@ var followChannelCollection= Backbone.Collection.extend({
 
 var followchannelcollection = new followChannelCollection;
 var unfollowchannelcollection = new unfollowChannelCollection;
-var feedcollection;
+var feedcollection = new feedCollection;
 
-function get_feed(url){
-	var MaxCount=10;
-	feedcollection = new feedCollection;
+function get_feed(url ,router) {
+	var MaxCount = 10;
 	$.ajax({
-			url: "http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=" + MaxCount + "&output=json&q=" + encodeURIComponent(url) + "&hl=en&callback=?",
-			dataType: "json",
-			success: function(data) {
-				$.each(data.responseData.feed.entries, function(e, item) {
-					console.log(item.author);
-					feedcollection.add(new feed({id:e,
-												author:item.author,
-												content:item.content,
-												contentSnippet:item.contentSnippet,
-												link:item.link,
-												publishedDate:item.publishedDate,
-												title:item.title
-					}));
-					console.log(JSON.stringify(feedcollection));
+		url: "http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=" + MaxCount + "&output=json&q=" + encodeURIComponent(url) + "&hl=en&callback=?",
+		dataType: "json",
+		success: function(data) {
+			$.each(data.responseData.feed.entries, function(e, item) {
+				feedcollection.add(new feed({
+					id: e,
+					author: item.author,
+					content: item.content,
+					contentSnippet: item.contentSnippet,
+					link: item.link,
+					publishedDate: item.publishedDate,
+					title: item.title
+				}));
+				console.log(JSON.stringify(feedcollection));
 
-				});
-			}});
+
+			});
+			router.changePage(new FeedView({collection:feedcollection}));
+		}
+	});
 }
 
-var HomeView = Backbone.View.extend({
+window.HomeView = Backbone.View.extend({
 
     template:_.template($('#home').html()),
 
@@ -74,7 +76,7 @@ var HomeView = Backbone.View.extend({
         return this;
     }
 });
-var FeedView = Backbone.View.extend({
+window.FeedView = Backbone.View.extend({
 	template:_.template($('#feed').html()),
 
 	render:function (eventName) {
@@ -88,7 +90,7 @@ var FeedView = Backbone.View.extend({
 var AppRouter = Backbone.Router.extend({
 	routes:{
         "":"home",
-        "channel/:name/:url":"feed"
+        "channel/:name/*url":"feed"
     },
     initialize:function () {
         // Handle back button throughout the application
@@ -107,12 +109,15 @@ var AppRouter = Backbone.Router.extend({
 
     feed:function(name , url) {
     	console.log('#feed'+name+url);
-    	get_feed(url);
-   		this.changePage(new FeedView({collection:feedcollection}))
+    	get_feed(url,this);
+   		//this.changePage(new FeedView({collection:feedcollection}));
     },
 
 
 
+    triggerChangeView: function (view) {
+	    this.changePage(view);
+	},
     changePage:function (page) {
         $(page.el).attr('data-role', 'page');
         page.render();

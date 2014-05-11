@@ -16,10 +16,10 @@
 		<a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-gear ui-btn-icon-notext ui-shadow"  data-form="ui-icon" data-role="button" role="button"> 设置 </a>
 	</div>
 	<div data-role="content">
-		<ul data-role="listview" id="channel_list">
+		<ul data-role="listview" id="channel_list" >
 			<% for (var i = 0; i <channel.length; i++) { %>
 			<% var item = channel[i]; %>
-			<li><a href ="#channel/<%=item.name%>/<%=item.url%>">
+			<li><a href ="#channel/<%=item.name%>/<%=encodeURIComponent(item.url)%>">
 			<%= item.name %></a> </li>
 			<% } %>
 		</ul>
@@ -54,12 +54,12 @@
 
 	<script type="text/template" id="feed">
 	<div class="ui-header ui-bar-a"  data-form="ui-bar-a" data-role="header" data-position="fixed">	
-		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-home ui-btn-icon-notext ui-shadow" data-form="ui-icon" data-role="button" role="button">主页</a>
-		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1"><%item.title%></h1>
+		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-home ui-btn-icon-notext ui-shadow" data-form="ui-icon" data-role="button" role="button" href="">主页</a>
+		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">订阅</h1>
 		<a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-refresh ui-btn-icon-notext ui-shadow"  data-form="ui-icon" data-role="button" role="button"> 刷新 </a>
 	</div>
 	<div data-role="content">
-		<ul data-role="listview" id="feed_list" data-inset="true">
+		<ul data-role="listview" id="feed_list" >
 		<% for (var i = 0; i <feed.length; i++) { %>
 
 			<% var item = feed[i]; %>
@@ -80,7 +80,7 @@
 
 	<script type="text/template" id="info">
 	<div class="ui-header ui-bar-a"  data-form="ui-bar-a" data-role="header" data-position="fixed">	
-		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-home ui-btn-icon-notext ui-shadow" data-form="ui-icon" data-role="button" role="button">主页</a>
+		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-home ui-btn-icon-notext ui-shadow" data-form="ui-icon" data-role="button" role="button" >主页</a>
 		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1"><%></h1>
 		<a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-star ui-btn-icon-notext ui-shadow"  data-form="ui-icon" data-role="button" role="button"> 收藏</a>
 	</div>
