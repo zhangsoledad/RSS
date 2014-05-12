@@ -42,6 +42,7 @@ var followchannelcollection = new followChannelCollection;
 var feedcollection  = new feedCollection;
 var starcollection  = new  starCollection;
 var feed_id;
+var app;
 
 
 function get_feed(url ,router) {
@@ -98,7 +99,8 @@ window.StarView = Backbone.View.extend({
 
     template:_.template($('#star').html()),
      initialize:function () {
-            this.listenTo(this.collection, 'remove', this.render);
+     	
+           // this.listenTo(this.collection, 'remove', app.navigate("star", { trigger: true }));
      },
     events: {
             "click  [href='#stardelete']": "deletepop",
@@ -110,14 +112,20 @@ window.StarView = Backbone.View.extend({
         return this;
     },
     deletepop :function(eventName){
-        $("#stardelete").popup( "open",{transition:"pop"});
+        $("#deletepop").popup( "open",{transition:"pop"});
         var delete_id = $(eventName.target).attr('id');
         console.log(delete_id);
-        $("#delete_conf").attr("href","#delete_conf/"+delete_id);
+        $("[href='#delete_conf']").attr("id",delete_id);
         console.log($("#delete_conf").attr("href"));
-    }
-    
+    },
+    delete_conf:function(eventName){
 
+    	var delete_id = $(eventName.target).attr('id');
+    	console.log(delete_id);
+    	starcollection.remove(starcollection.get(delete_id));
+    	console.log(JSON.stringify(starcollection));
+    	app.navigate("star", { trigger: true });
+    }
 });
 
 
@@ -128,7 +136,7 @@ var AppRouter = Backbone.Router.extend({
         "channel/:name/*url":"feed",
         "content/:id/:from" :"content",
         "star":"star",
-        "delete_conf/:id":"delete_conf"
+        //"delete_conf/:id":"delete_conf"
         
     },
     initialize:function () {
@@ -140,12 +148,12 @@ var AppRouter = Backbone.Router.extend({
         this.firstPage = true;
         this.starPage = false;
     },
-    delete_conf:function(id){
-        console.log(id);
-        $("#stardelete").popup( "close" );
-        starcollection.remove(starcollection.get(id));
-         console.log(JSON.stringify(starcollection));
-    },
+    //delete_conf:function(id){
+//        console.log(id);
+//        $("#deletepop").popup( "close" );
+//        starcollection.remove(starcollection.get(id));
+//        console.log(JSON.stringify(starcollection));
+//    },
 
 
     home:function () {
@@ -217,7 +225,7 @@ function app_initial(){
 	followchannelcollection.create(new Channel({id: "14",name: "社会焦点",url:"http://news.baidu.com/n?cmd=1&class=socianews&tn=rss"}));	
 
             //test
-            starcollection.create(new feed());
+     starcollection.create(new feed());
 }
 
 

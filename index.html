@@ -33,26 +33,26 @@
 		<a class="back ui-btn-right ui-btn-corner-all ui-btn ui-icon-back ui-btn-icon-notext ui-shadow"  data-form="ui-icon" data-role="button" role="button" href="#"> 返回 </a>
 	</div>
 
-                         <div data-role="content">
-                                <ul data-role="listview" data-split-icon="delete" data-split-theme="a" data-inset="true">
-                                        <% for (var i = 0; i <star.length; i++) { %>
-                                        <% var item = star[i]; %>
-                                        <li><a href ="#content/<%= item.id %>/star">
-                                                <h2><%= item.title %></h2>
-                                                <p><strong><%= item.author %></strong></p>
-                                                <p><%= item.contentSnippet %></p>
-                                                <a href="#stardelete" data-rel="popup" data-position-to="window" data-transition="pop" id ="<%= item.id %>"></a>
-                                        </a> 
-                                        </li>
-                                        <% } %>
-                                </ul>
-                         </div>
-                         <div data-role="popup" id="stardelete" data-theme="a" data-overlay-theme="b" class="ui-content" style="max-width:340px; padding-bottom:2em;">
-                                <h3>确认删除?</h3>
-                                 <p>删除所选的消息.</p>
-                                <a href="#" id="delete_conf"  class="ui-shadow ui-btn ui-corner-all ui-btn-b ui-icon-check ui-btn-icon-left ui-btn-inline ui-mini" >确认</a>
-                                <a href="#" data-rel="back" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-mini">取消</a>
-                                </div>
+     <div data-role="content">
+            <ul data-role="listview" data-split-icon="delete" data-split-theme="a" data-inset="true">
+                    <% for (var i = 0; i <star.length; i++) { %>
+                    <% var item = star[i]; %>
+                    <li><a href ="#content/<%= item.id %>/star">
+                            <h2><%= item.title %></h2>
+                            <p><strong><%= item.author %></strong></p>
+                            <p><%= item.contentSnippet %></p>
+                          <a href="#stardelete" data-rel="popup" data-position-to="window" data-transition="pop" id ="<%= item.id %>"></a>
+                    </a> 
+                    </li>
+                    <% } %>
+            </ul>
+         </div>
+         <div data-role="popup" id="deletepop" data-theme="a" data-overlay-theme="b" class="ui-content" style="max-width:340px; padding-bottom:2em;">
+                <h3>确认删除?</h3>
+                 <p>删除所选的消息.</p>
+                <a href="#delete_conf"  class="ui-shadow ui-btn ui-corner-all ui-btn-b ui-icon-check ui-btn-icon-left ui-btn-inline ui-mini" >确认</a>
+                <a href="#" data-rel="back" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-mini">取消</a>
+                </div>
 	</script>
 
                 <!--        订阅模板       -->
@@ -128,7 +128,7 @@
     <script type="text/javascript">
     $(document).ready(function () {
 	   app_initial();
-                var app = new AppRouter();
+                app = new AppRouter();
                 Backbone.history.start();
 			});
     </script>
