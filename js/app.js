@@ -14,12 +14,12 @@ var feed = Backbone.Model.extend({
 	initialize: function(){
     },
     defaults: {
-    	id: '',
-        author:'',
-        content: '',
-        contentSnippet:'',
-        link:'',
-        publishedDate:'',
+    	id: '1001',
+        author:'test',
+        content: 'test',
+        contentSnippet:'test',
+        link:'test',
+        publishedDate:'test',
         title:'无题'
     }
 });
@@ -27,11 +27,11 @@ var feedCollection = Backbone.Collection.extend({
 	model: feed
 });
 
-
-var unfollowChannelCollection= Backbone.Collection.extend({
-    model : Channel,
-    localStorage: new Backbone.LocalStorage("unfollow")
+var starCollection =Backbone.Collection.extend({
+            model: feed,
+            localStorage: new Backbone.LocalStorage("star")
 });
+
 
 var followChannelCollection= Backbone.Collection.extend({
     model : Channel,
@@ -39,9 +39,10 @@ var followChannelCollection= Backbone.Collection.extend({
 });
 
 var followchannelcollection = new followChannelCollection;
-var unfollowchannelcollection = new unfollowChannelCollection;
-var feedcollection = new feedCollection;
+var feedcollection  = new feedCollection;
+var starcollection  = new  starCollection;
 var feed_id;
+
 
 function get_feed(url ,router) {
 	var MaxCount = 10;
@@ -93,13 +94,42 @@ window.FeedView = Backbone.View.extend({
     }
 });
 
+window.StarView = Backbone.View.extend({
+
+    template:_.template($('#star').html()),
+     initialize:function () {
+            this.listenTo(this.collection, 'remove', this.render);
+     },
+    events: {
+            "click  [href='#stardelete']": "deletepop",
+            "click  [href='#delete_conf']":"delete_conf"
+     },
+
+    render:function (eventName) {
+        $(this.el).html(this.template({star:this.collection.toJSON()}));
+        return this;
+    },
+    deletepop :function(eventName){
+        $("#stardelete").popup( "open",{transition:"pop"});
+        var delete_id = $(eventName.target).attr('id');
+        console.log(delete_id);
+        $("#delete_conf").attr("href","#delete_conf/"+delete_id);
+        console.log($("#delete_conf").attr("href"));
+    }
+    
+
+});
+
 
 
 var AppRouter = Backbone.Router.extend({
 	routes:{
         "":"home",
         "channel/:name/*url":"feed",
-        "content/:id" :"content"
+        "content/:id/:from" :"content",
+        "star":"star",
+        "delete_conf/:id":"delete_conf"
+        
     },
     initialize:function () {
         // Handle back button throughout the application
@@ -108,6 +138,13 @@ var AppRouter = Backbone.Router.extend({
             return false;
         });
         this.firstPage = true;
+        this.starPage = false;
+    },
+    delete_conf:function(id){
+        console.log(id);
+        $("#stardelete").popup( "close" );
+        starcollection.remove(starcollection.get(id));
+         console.log(JSON.stringify(starcollection));
     },
 
 
@@ -122,27 +159,41 @@ var AppRouter = Backbone.Router.extend({
    		//this.changePage(new FeedView({collection:feedcollection}));
     },
 
-    content:function(id ){
+    content:function(id,from ){
+             var contentView; 
     	console.log('#content'+id);
     	feed_id =id;
-    	var feed_view =  feedcollection.get(feed_id);
-    	this.changePage(new FeedView({model:feed_view}));
-
+              if(from =="feed"){
+                 contentView=feedcollection.get(feed_id);
+              }else
+              {
+                contentView=starcollection.get(feed_id);
+              }
+             this.changePage(new FeedView({model:contentView}));
     },
-    triggerChangeView: function (view) {
-	    this.changePage(view);
-	},
+    star:function(){
+             console.log('#star');
+             this.starPage = true;
+             var starView = new StarView({collection:starcollection});
+             this.changePage(starView);
+    },
+  
     changePage:function (page) {
         $(page.el).attr('data-role', 'page');
         page.render();
         $('body').append($(page.el));
         var transition = $.mobile.defaultPageTransition;
+        var reverse = false;
         // We don't want to slide the first page
         if (this.firstPage) {
             transition = 'none';
             this.firstPage = false;
         }
-        $.mobile.changePage($(page.el), {changeHash:false, transition: transition});
+        if(this.starPage){
+            reverse =true;
+            this.starPage = false;
+        }
+        $.mobile.changePage($(page.el), {changeHash:false, transition: transition,reverse :reverse});
     }
 
 });
@@ -150,8 +201,7 @@ var AppRouter = Backbone.Router.extend({
 
 
 function app_initial(){
-
-	followchannelcollection.create(new Channel({id: "1",name: "国内焦点",url:"http://news.baidu.com/n?cmd=1&class=civilnews&tn=rss"}));
+	followchannelcollection.create(new Channel({id: "1",name: "国内焦点",url:"http://www.feedsoso.com/feed/ga10cv"}));
 	followchannelcollection.create(new Channel({id: "2",name: "国际焦点",url:"http://news.baidu.com/n?cmd=1&class=internews&tn=rss"}));
 	followchannelcollection.create(new Channel({id: "3",name: "军事焦点",url:"http://news.baidu.com/n?cmd=1&class=mil&tn=rss"}));
 	followchannelcollection.create(new Channel({id: "4",name: "财经焦点",url:"http://news.baidu.com/n?cmd=1&class=finannews&tn=rss"}));
@@ -160,12 +210,14 @@ function app_initial(){
 	followchannelcollection.create(new Channel({id: "7",name: "汽车焦点",url:"http://news.baidu.com/n?cmd=1&class=autonews&tn=rss"}));
 	followchannelcollection.create(new Channel({id: "8",name: "体育焦点",url:"http://news.baidu.com/n?cmd=1&class=sportnews&tn=rss"}));
 	followchannelcollection.create(new Channel({id: "9",name: "娱乐焦点",url:"http://news.baidu.com/n?cmd=1&class=enternews&tn=rss"}));
+	followchannelcollection.create(new Channel({id: "10",name: "游戏焦点",url:"http://news.baidu.com/n?cmd=1&class=gamenews&tn=rss"}));
+	followchannelcollection.create(new Channel({id: "11",name: "教育焦点",url:"http://news.baidu.com/n?cmd=1&class=edunnews&tn=rss"}));
+	followchannelcollection.create(new Channel({id: "12",name: "女人焦点",url:"http://news.baidu.com/n?cmd=1&class=healthnews&tn=rss"}));
+	followchannelcollection.create(new Channel({id: "13",name: "科技焦点",url:"http://news.baidu.com/n?cmd=1&class=technnews&tn=rss"}));
+	followchannelcollection.create(new Channel({id: "14",name: "社会焦点",url:"http://news.baidu.com/n?cmd=1&class=socianews&tn=rss"}));	
 
-	unfollowchannelcollection.create(new Channel({id: "10",name: "游戏焦点",url:"http://news.baidu.com/n?cmd=1&class=gamenews&tn=rss"}));
-	unfollowchannelcollection.create(new Channel({id: "11",name: "教育焦点",url:"http://news.baidu.com/n?cmd=1&class=edunnews&tn=rss"}));
-	unfollowchannelcollection.create(new Channel({id: "12",name: "女人焦点",url:"http://news.baidu.com/n?cmd=1&class=healthnews&tn=rss"}));
-	unfollowchannelcollection.create(new Channel({id: "13",name: "科技焦点",url:"http://news.baidu.com/n?cmd=1&class=technnews&tn=rss"}));
-	unfollowchannelcollection.create(new Channel({id: "14",name: "社会焦点",url:"http://news.baidu.com/n?cmd=1&class=socianews&tn=rss"}));	
+            //test
+            starcollection.create(new feed());
 }
 
 
