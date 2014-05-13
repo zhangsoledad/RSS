@@ -1,10 +1,8 @@
-
-
 var Channel = Backbone.Model.extend({
     initialize: function(){
     },
     defaults: {
-    	id: '',
+    	id: '100',
         name:'',
         url: '#'
     }
@@ -14,7 +12,7 @@ var feed = Backbone.Model.extend({
 	initialize: function(){
     },
     defaults: {
-    	id: '1001',
+    	id: '1000',
         author:'test',
         content: 'test',
         contentSnippet:'test',
@@ -26,22 +24,18 @@ var feed = Backbone.Model.extend({
 var feedCollection = Backbone.Collection.extend({
 	model: feed
 });
-
 var starCollection =Backbone.Collection.extend({
             model: feed,
             localStorage: new Backbone.LocalStorage("star")
 });
-
-
 var followChannelCollection= Backbone.Collection.extend({
-    model : Channel,
-    localStorage: new Backbone.LocalStorage("follow")
+            model : Channel,
+            localStorage: new Backbone.LocalStorage("follow")
 });
 
 var followchannelcollection = new followChannelCollection;
 var feedcollection  = new feedCollection;
 var starcollection  = new  starCollection;
-var feed_id;
 var app;
 
 
@@ -51,33 +45,41 @@ function get_feed(url ,router) {
 		url: "http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=" + MaxCount + "&output=json&q=" + encodeURIComponent(url) + "&hl=en&callback=?",
 		dataType: "json",
 		success: function(data) {
+                                        var temcollection = new feedCollection;
+                                        var feed_id = feedcollection.length;
+                                      //  console.log(feed_id);
 			$.each(data.responseData.feed.entries, function(e, item) {
-				feedcollection.add(new feed({
-					id: e,
+				var temfeed= new feed({
+					id: feed_id++,
 					author: item.author,
 					content: item.content,
 					contentSnippet: item.contentSnippet,
 					link: item.link,
 					publishedDate: item.publishedDate,
 					title: item.title
-				}));
+				});
+                                                    feedcollection.add(temfeed);
+                                                    
+                                                     temcollection.add(temfeed);
 				//console.log(JSON.stringify(feedcollection));
 			});
-			router.changePage(new FeedListView({collection:feedcollection}));
+			router.changePage(new FeedListView({collection:temcollection}));
+
 		}
 	});
 }
 
-window.HomeView = Backbone.View.extend({
+var HomeView = Backbone.View.extend({
 
     template:_.template($('#home').html()),
+
 
     render:function (eventName) {
         $(this.el).html(this.template({channel:this.collection.toJSON()}));
         return this;
     }
 });
-window.FeedListView = Backbone.View.extend({
+var FeedListView = Backbone.View.extend({
 	template:_.template($('#feed').html()),
 
 	render:function (eventName) {
@@ -85,47 +87,61 @@ window.FeedListView = Backbone.View.extend({
         return this;
     }
 });
-window.FeedView = Backbone.View.extend({
-	template:_.template($('#content').html()),
-
-	render:function (eventName) {
-		console.log(this.model.toJSON());
-       $(this.el).html(this.template({feed: this.model.toJSON()}));
-        return this;
-    }
+ var FeedView = Backbone.View.extend({
+        template:_.template($('#content').html()),
+        initialize: function(){
+                
+        },
+        
+        render:function (eventName) {
+                    //console.log(this.model.toJSON());
+                    $(this.el).html(this.template({feed: this.model.toJSON()}));
+                    return this;
+         }
+     
+});
+ var  StarItemView = Backbone.View.extend({
+        template:_.template($('#starcontent').html()),
+        initialize: function(){
+                
+        },
+        
+        render:function (eventName) {
+                    //console.log(this.model.toJSON());
+                    $(this.el).html(this.template({star: this.model.toJSON()}));
+                    return this;
+         }
+     
 });
 
-window.StarView = Backbone.View.extend({
+ var  PlusView= Backbone.View.extend({
+        template:_.template($('#plus').html()),
+        initialize: function(){
+                
+        },
+        
+        render:function (eventName) {
+                    //console.log(this.model.toJSON());
+                    $(this.el).html(this.template());
+                    return this;
+         }
+     
+});
+
+var StarView = Backbone.View.extend({
 
     template:_.template($('#star').html()),
-     initialize:function () {
-     	
-           // this.listenTo(this.collection, 'remove', app.navigate("star", { trigger: true }));
-     },
-    events: {
-            "click  [href='#stardelete']": "deletepop",
-            "click  [href='#delete_conf']":"delete_conf"
-     },
+    initialize: function(){
+       
+    },
+    
 
     render:function (eventName) {
         $(this.el).html(this.template({star:this.collection.toJSON()}));
+       
         return this;
-    },
-    deletepop :function(eventName){
-        $("#deletepop").popup( "open",{transition:"pop"});
-        var delete_id = $(eventName.target).attr('id');
-        console.log(delete_id);
-        $("[href='#delete_conf']").attr("id",delete_id);
-        console.log($("#delete_conf").attr("href"));
-    },
-    delete_conf:function(eventName){
-
-    	var delete_id = $(eventName.target).attr('id');
-    	console.log(delete_id);
-    	starcollection.remove(starcollection.get(delete_id));
-    	console.log(JSON.stringify(starcollection));
-    	app.navigate("star", { trigger: true });
     }
+
 });
 
 
@@ -134,9 +150,14 @@ var AppRouter = Backbone.Router.extend({
 	routes:{
         "":"home",
         "channel/:name/*url":"feed",
-        "content/:id/:from" :"content",
+        "content/:id" :"content",
         "star":"star",
-        //"delete_conf/:id":"delete_conf"
+        "chanel_delete/:id":"chanel_delete",
+        "delete_conf/:id":"delete_conf",
+        "starcontent/:id":"starcontent",
+        "add_conf/:id":"add_conf",
+        "plus":"plus",
+        "plus_rss":"plus_rss"
         
     },
     initialize:function () {
@@ -146,63 +167,107 @@ var AppRouter = Backbone.Router.extend({
             return false;
         });
         this.firstPage = true;
-        this.starPage = false;
     },
-    //delete_conf:function(id){
-//        console.log(id);
-//        $("#deletepop").popup( "close" );
-//        starcollection.remove(starcollection.get(id));
-//        console.log(JSON.stringify(starcollection));
-//    },
+ 
 
 
     home:function () {
-        console.log('#home');
+     //   console.log('#home');
         this.changePage(new HomeView({collection:followchannelcollection}));
     },
 
     feed:function(name , url) {
-    	console.log('#feed'+name+url);
+    //console.log('#feed'+name+url);
     	get_feed(url,this);
    		//this.changePage(new FeedView({collection:feedcollection}));
     },
 
-    content:function(id,from ){
+    content:function(id ){
              var contentView; 
-    	console.log('#content'+id);
-    	feed_id =id;
-              if(from =="feed"){
-                 contentView=feedcollection.get(feed_id);
-              }else
-              {
-                contentView=starcollection.get(feed_id);
-              }
-             this.changePage(new FeedView({model:contentView}));
+    	//console.log('#content'+id);
+                 contentView=feedcollection.get(id);
+                  this.changePage(new FeedView({model:contentView}));
     },
+    starcontent:function(id ){
+                    var contentView; 
+                    contentView=starcollection.get(id)
+                 this.changePage(new  StarItemView({model:contentView}));
+    },
+
     star:function(){
-             console.log('#star');
+            // console.log('#star');
              this.starPage = true;
              var starView = new StarView({collection:starcollection});
              this.changePage(starView);
     },
   
-    changePage:function (page) {
+    delete_conf:function(id){
+            var r=confirm("确认删除?");
+            if(r==true){
+            starcollection.remove(starcollection.get(id));
+            console.log(JSON.stringify(starcollection));
+            this.navigate("star", { trigger: true });}
+    },
+    
+    add_conf:function(id){
+            var r=confirm("确认添加?");
+            if(r==true){
+            var star_id = starcollection.length;
+            var add =  feedcollection.get(id);
+           // console.log(JSON.stringify(add));
+            var  temp = new feed ({
+                    id: star_id++,
+                    author:add.get("author"),
+                    content: add.get("content"),
+                    contentSnippet:  add.get("contentSnippet"),
+                    link:add.get("link"),
+                    publishedDate:add.get("publishedDate"),
+                    title:add.get(" title")
+            });
+            console.log(JSON.stringify(temp));
+            starcollection.create(temp);}
+           //  console.log(JSON.stringify(starcollection));
+        },
+        chanel_delete:function(id){
+            var r=confirm("确认删除?");
+            if(r==true){
+                followchannelcollection.remove(followchannelcollection.get(id));
+                this.navigate("", { trigger: true });}
+            
+        },
+        plus:function(){
+                 this.changePage(new PlusView());
+        },
+
+        plus_rss:function(){
+                var rss_id=followchannelcollection.length+15;
+                var name =$("#name").val();
+                var url =$("#channel_url").val();
+                console.log(name+url);
+                if (_.isEmpty(name)||_.isEmpty(url)){
+                    confirm("地址和名称不能为空！");
+                }else{
+                    followchannelcollection.create(new  Channel({id:rss_id,name:name,url:url}));
+                    console.log(JSON.stringify(followchannelcollection));
+                    confirm("保存成功");
+                    $("#name").empty();
+                    $("#channel_url").empty();
+                }
+        },
+
+        changePage:function (page) {
         $(page.el).attr('data-role', 'page');
         page.render();
         $('body').append($(page.el));
         var transition = $.mobile.defaultPageTransition;
-        var reverse = false;
         // We don't want to slide the first page
         if (this.firstPage) {
             transition = 'none';
             this.firstPage = false;
         }
-        if(this.starPage){
-            reverse =true;
-            this.starPage = false;
+        
+        $.mobile.changePage($(page.el), {changeHash:false, transition: transition});
         }
-        $.mobile.changePage($(page.el), {changeHash:false, transition: transition,reverse :reverse});
-    }
 
 });
 
@@ -225,7 +290,7 @@ function app_initial(){
 	followchannelcollection.create(new Channel({id: "14",name: "社会焦点",url:"http://news.baidu.com/n?cmd=1&class=socianews&tn=rss"}));	
 
             //test
-     starcollection.create(new feed());
+            starcollection.create(new feed());
 }
 
 

@@ -13,21 +13,25 @@
 	<div class="ui-header ui-bar-a"  data-form="ui-bar-a" data-role="header" data-position="fixed">	
 		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-bars ui-btn-icon-notext ui-shadow" data-form="ui-icon" data-role="button" role="button"  href="#star">收藏列表</a>
 		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">主页</h1>
-		<a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-gear ui-btn-icon-notext ui-shadow"  data-form="ui-icon" data-role="button" role="button"> 设置 </a>
+		<a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-plus ui-btn-icon-notext ui-shadow"  data-form="ui-icon" data-role="button" role="button"  href="#plus">添加</a>
 	</div>
 	<div data-role="content">
-		<ul data-role="listview" id="channel_list" >
+		<ul data-role="listview" data-split-icon="delete" data-split-theme="a" data-inset="true">
 			<% for (var i = 0; i <channel.length; i++) { %>
 			<% var item = channel[i]; %>
-			<li><a href ="#channel/<%=item.name%>/<%=encodeURIComponent(item.url)%>">
-			<%= item.name %></a> </li>
+			<li>
+                                         <a href ="#channel/<%=item.name%>/<%=encodeURIComponent(item.url)%>">
+			<%= item.name %></a> 
+                                         <a href="#chanel_delete/<%= item.id %>" ></a>
+                                        </li>
 			<% } %>
+
 		</ul>
 	</div>
 	</script>
 
               <!--           收藏模板      -->
-	<script type="text/template" id="star">
+<script type="text/template" id="star">
 	<div class="ui-header ui-bar-a"  data-form="ui-bar-a" data-role="header" data-position="fixed"  data-direction="reverse">	
 		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">收藏</h1>
 		<a class="back ui-btn-right ui-btn-corner-all ui-btn ui-icon-back ui-btn-icon-notext ui-shadow"  data-form="ui-icon" data-role="button" role="button" href="#"> 返回 </a>
@@ -37,85 +41,92 @@
             <ul data-role="listview" data-split-icon="delete" data-split-theme="a" data-inset="true">
                     <% for (var i = 0; i <star.length; i++) { %>
                     <% var item = star[i]; %>
-                    <li><a href ="#content/<%= item.id %>/star">
+                    <li><a href ="#starcontent/<%= item.id %>">
                             <h2><%= item.title %></h2>
                             <p><strong><%= item.author %></strong></p>
                             <p><%= item.contentSnippet %></p>
-                          <a href="#stardelete" data-rel="popup" data-position-to="window" data-transition="pop" id ="<%= item.id %>"></a>
+                          <a href="#delete_conf/<%= item.id %>"  ></a>
                     </a> 
                     </li>
                     <% } %>
             </ul>
          </div>
-         <div data-role="popup" id="deletepop" data-theme="a" data-overlay-theme="b" class="ui-content" style="max-width:340px; padding-bottom:2em;">
-                <h3>确认删除?</h3>
-                 <p>删除所选的消息.</p>
-                <a href="#delete_conf"  class="ui-shadow ui-btn ui-corner-all ui-btn-b ui-icon-check ui-btn-icon-left ui-btn-inline ui-mini" >确认</a>
-                <a href="#" data-rel="back" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-mini">取消</a>
-                </div>
-	</script>
+        
+</script>
 
                 <!--        订阅模板       -->
-	<script type="text/template" id="setting">
+<script type="text/template" id="plus">
 	<div class="ui-header ui-bar-a"  data-form="ui-bar-a" data-role="header" data-position="fixed">	
-	<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-back ui-btn-icon-notext ui-shadow"  data-form="ui-icon" data-role="button" role="button"> 返回 </a>
-		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">设置</h1>
-                            <div data-role="navbar">
-                                <ul>
-                                             <li><a href="#">添加</a></li>
-                                             <li><a href="#">删除</a></li>
-                                </ul>
-                            </div>
-		
+	<a class="back ui-btn-left ui-btn-corner-all ui-btn ui-icon-back ui-btn-icon-notext ui-shadow"  data-form="ui-icon" data-role="button" role="button" href="#"> 返回 </a>
+		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">添加源</h1>
 	</div>
-
                      <div data-role="content">
-
+                                <form>
+                                <label for="name">名称:</label>
+                                <input type="text" data-clear-btn="true" name="name" id="name" value="">
+                                <label for="channel_url">地址:</label>
+                                <input type="url" data-clear-btn="true" name="channel_url" id="channel_url" value="">
+                                <a href="#plus_rss" class="ui-btn ui-btn-b">添加</a>
+                                </form>
                      </div>
-	</script>
+</script>
 
                  <!--               -->
-	<script type="text/template" id="feed">
+<script type="text/template" id="feed">
 	<div class="ui-header ui-bar-a"  data-form="ui-bar-a" data-role="header" data-position="fixed">	
 		<a class="back ui-btn-left ui-btn-corner-all ui-btn ui-icon-home ui-btn-icon-notext ui-shadow" data-form="ui-icon" data-role="button" role="button" href="#">主页</a>
 		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">订阅</h1>
-		<a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-refresh ui-btn-icon-notext ui-shadow"  data-form="ui-icon" data-role="button" role="button" href="#refresh"> 刷新 </a>
 	</div>
 	<div data-role="content">
 		<ul data-role="listview" id="feed_list" >
 		<% for (var i = 0; i <feed.length; i++) { %>
 
 			<% var item = feed[i]; %>
-			<li><a href ="#content/<%= item.id %>/feed">
+			<li><a href ="#content/<%= item.id %>">
 					<h2><%= item.title %></h2>
 					<p><strong><%= item.author %></strong></p>
 					<p><%= item.contentSnippet %></p>
-					<p class="ui-li-aside"><strong>
-					<%= moment(new Date(item.publishedDate)).fromNow()%>
-					</strong></p>	
+					
 			</a> 
 			</li>
 		<% } %>
 		</ul>
 	</div>
-	</script>
+</script>
 
 
 
             <!--               -->
-	<script type="text/template" id="content">
+<script type="text/template" id="content">
 	<div class="ui-header ui-bar-a"  data-form="ui-bar-a" data-role="header" data-position="fixed">	
 		<a class="back ui-btn-left ui-btn-corner-all ui-btn ui-icon-back ui-btn-icon-notext ui-shadow" data-form="ui-icon" data-role="button" role="button" href="#">返回</a>
 		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1"></h1>
-		<a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-star ui-btn-icon-notext ui-shadow"  data-form="ui-icon" data-role="button" role="button"> 收藏</a>
+                          
+		<a  href="#add_conf/<%=feed.id%>" class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-star ui-btn-icon-notext ui-shadow"  data-form="ui-icon" data-role="button" role="button"> 收藏</a>
 	</div>
 	<div data-role="content">
 		<h2><%=feed.title%></h2>
-		<%=feed.content%>
+		<p><%=feed.content%></p>
+                         <p><strong>
+                    <%= moment(new Date(feed.publishedDate)).fromNow()%>
+                    </strong></p>   
 	</div>
-	</script>
 
-	<script type="text/javascript"src="js/lib/jquery.js"></script>
+</script>
+
+<script type="text/template" id="starcontent">
+        <div class="ui-header ui-bar-a"  data-form="ui-bar-a" data-role="header" data-position="fixed"> 
+        <a class="back ui-btn-left ui-btn-corner-all ui-btn ui-icon-back ui-btn-icon-notext ui-shadow" data-form="ui-icon" data-role="button" role="button" href="#">返回</a>
+        <h1 class="ui-title" tabindex="0" role="heading" aria-level="1"></h1>
+    </div>
+    <div data-role="content">
+        <h2><%=star.title%></h2>
+        <%=star.content%>
+    </div>
+
+</script>
+
+     <script type="text/javascript"src="js/lib/jquery.js"></script>
     <script type="text/javascript"src="js/lib/jqmconfig.js"></script>
     <script type="text/javascript"src="js/lib/jquerymobile.js"></script>
     <script type="text/javascript"src="js/lib/underscore.js"></script> 
@@ -125,13 +136,13 @@
     <script type="text/javascript"src="js/lib/zh-cn.js"></script>
     <script type="text/javascript"src="js/app.js"></script>
 
-    <script type="text/javascript">
+<script type="text/javascript">
     $(document).ready(function () {
 	   app_initial();
                 app = new AppRouter();
                 Backbone.history.start();
-			});
-    </script>
+    });
+</script>
 
 
 
